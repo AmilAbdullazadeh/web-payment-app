@@ -1,9 +1,10 @@
 import React, {useState, useEffect} from "react";
 import {Col, Container, Row} from "react-bootstrap";
-import Category from "../components/Category";
 import Message from "../components/Message";
+import {Link} from "react-router-dom";
+import Provider from "../components/Provider";
 
-function HomeScreen({history}) {
+function ProviderScreen({match, history}) {
 
     const categoryList = [
         {
@@ -130,48 +131,40 @@ function HomeScreen({history}) {
         // }
     ]
 
-    const [categories, setCategories] = useState();
+    const categoryId = match.params.id;
+
+    const [categoryFiltered, setCategoryFiltered] = useState();
+    const [providers, setProviders] = useState();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // useEffect(() => {
-    //     fetch("testURL")
-    //         .then((response) => response.json())
-    //         .then((data) => {
-    //             console.info(error);
-    //             setCategories(data)
-    //         })
-    //         .catch((error) => {
-    //             console.error(error);
-    //             setError(error)
-    //         })
-    //         .finally(() => setLoading(false))
-    // }, [categories, error]);
-
     useEffect(() => {
         try {
-            setCategories(categoryList);
+            const categoryFiltered = categoryList.filter(category => category.id === categoryId);
+            setCategoryFiltered(categoryFiltered[0]);
+            setProviders(categoryFiltered[0]);
         } catch (error) {
             console.error(error);
             setError(error);
         } finally {
             setLoading(false);
         }
-
     }, []);
-
 
     if (loading) return "Loading...";
     if (error) return <Message variant="danger">{error}</Message>
 
     return (
         <Container>
-            <h1>Categories</h1>
+            <h1>Providers</h1>
+            <Link to="/" className="btn btn-light my-3">
+                Go Back
+            </Link>
             <div>
                 <Row>
-                    {categories.map((category) => (
-                        <Col key={category.id} sm={12} md={6} lg={4} xl={3}>
-                            <Category category={category}/>
+                    {providers.providers.map((provider) => (
+                        <Col key={provider.id} sm={12} md={6} lg={4} xl={3}>
+                            <Provider categoryId={categoryId} provider={provider}/>
                         </Col>
                     ))}
                 </Row>
@@ -180,4 +173,4 @@ function HomeScreen({history}) {
     );
 }
 
-export default HomeScreen;
+export default ProviderScreen;

@@ -1,0 +1,47 @@
+.exp {
+    display: flex;
+    max-width: 200px;
+}
+
+.exp-left {
+    border-right: none;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+}
+.exp-right {
+    border-left: none;
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+}
+
+.exp-left, .exp-right:focus {
+    outline: none;
+}
+
+.exp-line {
+    width: 2px;
+    background-color: #737373a8;
+    transform: rotate(
+            20deg);
+    border-radius: 50px;
+}
+
+.cardNumber {
+    /*max-width: 300px;*/
+}
+
+.cvv {
+    /*max-width: 85px;*/
+}
+
+.card-container {
+    padding: 10px 10px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    box-shadow: -3px 6px 16px -12px;
+}
+
+.submitButton {
+    width: 100%;
+    text-align: center;
+}
