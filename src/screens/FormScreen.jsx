@@ -1,143 +1,11 @@
-import React, {useState, useEffect} from "react";
-import {Col, Container, Form, Row, Button, Card} from "react-bootstrap";
+import React, {useState, useEffect, useContext} from "react";
+import {Col, Container, Form, Row, Button} from "react-bootstrap";
 import Message from "../components/Message";
 import {Link} from "react-router-dom";
 import Receipt from "../components/Receipt";
+import {CategoryListContext} from "../contexts/CategoryListContext";
 
 function FormScreen({match, history}) {
-
-    const categoryList = [
-        {
-            "id": "1",
-            "name": "Mobile",
-            "providers": [
-                {
-                    "id": "1",
-                    "name": "Bakcell",
-                    "fields": [
-                        {
-                            "id": "prefix_id",
-                            "type": 4,
-                            "label": "Prefix",
-                            "options": [
-                                {"k": "1", "v": "055"},
-                            ]
-                        },
-                        {
-                            "id": "phone_number",
-                            "type": 2,
-                            "label": "Phone number",
-                        }
-                    ]
-                },
-                {
-                    "id": "2",
-                    "name": "Nar",
-                    "fields": [
-                        {
-                            "id": "prefix_id",
-                            "type": 4,
-                            "label": "Prefix",
-                            "options": [
-                                {"k": "1", "v": "055"},
-                                {"k": "2", "v": "077"},
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "id": "3",
-                    "name": "Azercell",
-                    "fields": [
-                        {
-                            "id": "prefix_id",
-                            "type": 4,
-                            "label": "Prefix",
-                            "options": [
-                                {"k": "1", "v": "050"},
-                                {"k": "2", "v": "051"},
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "id": "2",
-            "name": "Utilities",
-            "providers": [
-                {
-                    "id": "1",
-                    "name": "Azeriqaz",
-                    "fields": [
-                        {
-                            "id": "subscriber_id",
-                            "type": 1,
-                            "label": "Subscriber"
-                        }
-                    ]
-                },
-                {
-                    "id": "2",
-                    "name": "Azerisu",
-                    "fields": [
-                        {
-                            "id": "prefix_id",
-                            "type": 4,
-                            "label": "Prefix",
-                            "options": [
-                                {"k": "1", "v": "Residential"},
-                                {"k": "2", "v": "Commercial"},
-                            ]
-                        },
-                        {
-                            "id": "subscriber_id",
-                            "type": 1,
-                            "label": "Subscriber"
-                        }
-                    ]
-                },
-                {
-                    "id": "3",
-                    "name": "Grand Hayat",
-                    "fields": [
-                        {
-                            "id": "client_code",
-                            "type": 2,
-                            "label": "Client code"
-                        }
-                    ]
-                }
-            ]
-        },
-        // {
-        //     "id": "3",
-        //     "name": "Banks",
-        //     "providers": [
-        //         {
-        //             "id": "1",
-        //             "name": "Kapital Bank",
-        //             "fields": [
-        //                 {}
-        //             ]
-        //         },
-        //         {
-        //             "id": "1",
-        //             "name": "Pasha Bank",
-        //             "fields": [
-        //                 {}
-        //             ]
-        //         },
-        //         {
-        //             "id": "1",
-        //             "name": "Access Bank",
-        //             "fields": [
-        //                 {}
-        //             ]
-        //         }
-        //     ]
-        // }
-    ]
 
     const categoryId = match.params.categoryId;
     const providerId = match.params.providerId;
@@ -167,11 +35,20 @@ function FormScreen({match, history}) {
     const [dataRequest, setDataRequest] = useState({});
     const [dataReceipt, setDataReceipt] = useState({});
 
-
     const [showReceipt, setShowReceipt] = useState(false);
+
+    const categoryList = useContext(CategoryListContext);
 
     useEffect(() => {
         try {
+
+            //  check locale storage data
+            const localeData = JSON.parse(localStorage.getItem('receiptStorage'));
+            console.log('into if');
+            if (localeData !== undefined || localeData !== null) {
+                console.log('into if');
+                setShowReceipt(true);
+            }
 
             const categoryFiltered = categoryList.filter(category => category.id === categoryId);
             const providerFiltered = providers.filter(provider => provider.id === providerId);
@@ -185,7 +62,7 @@ function FormScreen({match, history}) {
         } finally {
             setLoading(false);
         }
-    }, [loading, error, isSubmit]);
+    }, [loading, error, isSubmit, showReceipt]);
 
     const fieldChanged = (key, value) => {
         setDatas(currentValues => {
@@ -267,6 +144,9 @@ function FormScreen({match, history}) {
 
             setDataReceipt(receipt);
 
+            // local storage
+            localStorage.setItem('receiptStorage', JSON.stringify(receipt));
+
             // eslint-disable-next-line no-unused-expressions
             dataReceipt !== undefined && dataRequest !== undefined ? setShowReceipt(true) : setShowReceipt(false);
 
@@ -274,14 +154,25 @@ function FormScreen({match, history}) {
         setValidated(true);
     };
 
+    const handleBack = () => {
+        const localeData = JSON.parse(localStorage.getItem('receiptStorage'));
+
+        if (localeData !== undefined || localeData !== null) {
+            localStorage.removeItem('receiptStorage');
+            setShowReceipt(false);
+        }
+
+        history.push('/');
+    }
+
     if (loading) return "Loading...";
     if (error) return <Message variant="danger">{error}</Message>
 
     return (
         <Container>
-            <Link to="/" className="btn btn-light my-3">
+            <Button onClick={handleBack} className="btn btn-light my-3">
                 Back
-            </Link>
+            </Button>
             {
                 (isSubmit && showReceipt) ? <Receipt dataReceipt={dataReceipt}/>
                     : (

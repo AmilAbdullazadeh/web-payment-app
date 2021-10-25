@@ -1,9 +1,6 @@
-import React, {useState, useEffect} from "react";
-import {Col, Container, Form, Row, Button, Card} from "react-bootstrap";
-import Message from "./Message";
-import {Link} from "react-router-dom";
+import React from "react";
+import {Container, Card} from "react-bootstrap";
 import successIcon from '../assets/checked.png';
-
 
 function Receipt({dataReceipt}) {
 
