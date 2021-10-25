@@ -14,6 +14,7 @@ function ProviderScreen({match, history}) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    // context api
     const categoryList = useContext(CategoryListContext);
 
     useEffect(() => {

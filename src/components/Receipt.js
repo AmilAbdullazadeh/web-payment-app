@@ -17,11 +17,13 @@ function Receipt({dataReceipt}) {
                             <span className="text-success">Transaction date: </span> <strong>{dataReceipt.date}</strong>
                         </Card.Title>
                         <Card.Title as="div">
+                            <span className="text-success">Transaction details: </span>
                             {
-                                <>
-                                    <span className="text-success">Transaction date: </span>
-                                    <strong>{Object.keys(dataReceipt.details)} {Object.values(dataReceipt.details)}</strong>
-                                </>
+                                Object.entries(dataReceipt.details).map(([key, value]) => (
+                                    <>
+                                        <strong>{key}: {value},</strong> <br/>
+                                    </>
+                                ))
                             }
                         </Card.Title>
                         <Card.Title as="div">

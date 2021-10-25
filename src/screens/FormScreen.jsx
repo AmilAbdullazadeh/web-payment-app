@@ -1,7 +1,6 @@
 import React, {useState, useEffect, useContext} from "react";
 import {Col, Container, Form, Row, Button} from "react-bootstrap";
 import Message from "../components/Message";
-import {Link} from "react-router-dom";
 import Receipt from "../components/Receipt";
 import {CategoryListContext} from "../contexts/CategoryListContext";
 
@@ -10,7 +9,6 @@ function FormScreen({match, history}) {
     const categoryId = match.params.categoryId;
     const providerId = match.params.providerId;
 
-    const [type, setType] = useState(null);
     const [field, setField] = useState();
     const [providers, setProviders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -28,7 +26,6 @@ function FormScreen({match, history}) {
     const [datas, setDatas] = useState({})
 
     const [validated, setValidated] = useState(false);
-    const [keyData, setKeyData] = useState()
 
     const [isSubmit, setIsSubmit] = useState(false);
 
@@ -37,17 +34,18 @@ function FormScreen({match, history}) {
 
     const [showReceipt, setShowReceipt] = useState(false);
 
+    // context api
     const categoryList = useContext(CategoryListContext);
 
     useEffect(() => {
         try {
+            //  check local storage data
+            const localData = JSON.parse(localStorage.getItem('receiptStorage'));
 
-            //  check locale storage data
-            const localeData = JSON.parse(localStorage.getItem('receiptStorage'));
-            console.log('into if');
-            if (localeData !== undefined || localeData !== null) {
-                console.log('into if');
+            if (localData !== undefined && localData !== null) {
+                setIsSubmit(true);
                 setShowReceipt(true);
+                setDataReceipt(localData);
             }
 
             const categoryFiltered = categoryList.filter(category => category.id === categoryId);
@@ -55,7 +53,6 @@ function FormScreen({match, history}) {
 
             setProviders(categoryFiltered[0].providers);
             setField(providerFiltered[0]);
-
         } catch (error) {
             console.error(error);
             setError(error);
@@ -157,8 +154,9 @@ function FormScreen({match, history}) {
     const handleBack = () => {
         const localeData = JSON.parse(localStorage.getItem('receiptStorage'));
 
-        if (localeData !== undefined || localeData !== null) {
+        if (localeData !== undefined || true) {
             localStorage.removeItem('receiptStorage');
+            setIsSubmit(false);
             setShowReceipt(false);
         }
 
@@ -171,7 +169,7 @@ function FormScreen({match, history}) {
     return (
         <Container>
             <Button onClick={handleBack} className="btn btn-light my-3">
-                Back
+                Go back
             </Button>
             {
                 (isSubmit && showReceipt) ? <Receipt dataReceipt={dataReceipt}/>

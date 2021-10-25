@@ -4,7 +4,7 @@ import Category from "../components/Category";
 import Message from "../components/Message";
 import {CategoryListContext} from "../contexts/CategoryListContext";
 
-function HomeScreen({history}) {
+function HomeScreen() {
 
     const [categories, setCategories] = useState();
     const [loading, setLoading] = useState(true);
@@ -24,6 +24,7 @@ function HomeScreen({history}) {
     //         .finally(() => setLoading(false))
     // }, [categories, error]);
 
+    // context api
     const categoryList = useContext(CategoryListContext);
 
     useEffect(() => {
