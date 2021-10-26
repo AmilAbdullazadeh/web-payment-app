@@ -1,0 +1,83 @@
+[
+  {
+    "id": "1",
+    "name": "Mobile",
+    "providers": [
+      {
+        "id": "1",
+        "name": "Bakcell",
+        "fields": [
+          {}
+        ]
+      },
+      {
+        "id": "2",
+        "name": "Nar",
+        "fields": [
+          {}
+        ]
+      },
+      {
+        "id": "3",
+        "name": "Azercell",
+        "fields": [
+          {}
+        ]
+      }
+    ]
+  },
+  {
+    "id": "2",
+    "name": "Utilities",
+    "providers": [
+      {
+        "id": "1",
+        "name": "Azeriqaz",
+        "fields": [
+          {}
+        ]
+      },
+      {
+        "id": "2",
+        "name": "Azerisu",
+        "fields": [
+          {}
+        ]
+      },
+      {
+        "id": "3",
+        "name": "Grand Hayat",
+        "fields": [
+          {}
+        ]
+      }
+    ]
+  },
+  {
+    "id": "3",
+    "name": "Banks",
+    "providers": [
+      {
+        "id": "1",
+        "name": "Kapital Bank",
+        "fields": [
+          {}
+        ]
+      },
+      {
+        "id": "1",
+        "name": "Pasha Bank",
+        "fields": [
+          {}
+        ]
+      },
+      {
+        "id": "1",
+        "name": "Access Bank",
+        "fields": [
+          {}
+        ]
+      }
+    ]
+  }
+]
