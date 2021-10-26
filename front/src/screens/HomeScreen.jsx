@@ -2,13 +2,16 @@ import React, {useState, useEffect, useContext} from "react";
 import {Col, Container, Row} from "react-bootstrap";
 import Category from "../components/Category";
 import Message from "../components/Message";
-// import {CategoryListContext} from "../contexts/CategoryListContext";
+import {CategoryListContext} from "../contexts/CategoryListContext";
 
 function HomeScreen() {
 
     const [categories, setCategories] = useState();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+        // context api
+    const categoryList = useContext(CategoryListContext);
 
     useEffect(() => {
         fetch("http://localhost:8080/payments/categories")
@@ -31,9 +34,6 @@ function HomeScreen() {
             })
             .finally(() => setLoading(false))
     }, [loading, error]);
-
-    // context api
-    // const categoryList = useContext(CategoryListContext);
 
     if (loading) return "Loading...";
     if (error) return <Message variant="danger">{error}</Message>
