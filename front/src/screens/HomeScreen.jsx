@@ -10,7 +10,7 @@ function HomeScreen() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-        // context api
+    // context api
     const categoryList = useContext(CategoryListContext);
 
     useEffect(() => {
