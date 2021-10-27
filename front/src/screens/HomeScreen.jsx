@@ -2,7 +2,7 @@ import React, {useState, useEffect, useContext} from "react";
 import {Col, Container, Row} from "react-bootstrap";
 import Category from "../components/Category";
 import Message from "../components/Message";
-import {CategoryListContext} from "../contexts/CategoryListContext";
+// import {CategoryListContext} from "../contexts/CategoryListContext";
 
 function HomeScreen() {
 
@@ -11,7 +11,7 @@ function HomeScreen() {
     const [error, setError] = useState(null);
 
     // context api
-    const categoryList = useContext(CategoryListContext);
+    // const categoryList = useContext(CategoryListContext);
 
     useEffect(() => {
         fetch("http://localhost:8080/payments/categories")

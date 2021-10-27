@@ -3,6 +3,7 @@ import {Col, Container, Row} from "react-bootstrap";
 import Message from "../components/Message";
 import {Link} from "react-router-dom";
 import Provider from "../components/Provider";
+
 // import {CategoryListContext} from "../contexts/CategoryListContext";
 
 function ProviderScreen({match, history}) {
@@ -19,16 +20,22 @@ function ProviderScreen({match, history}) {
 
     useEffect(() => {
         try {
-            const categoryFiltered = categoryList.filter(category => category.id === categoryId);
-            setCategoryFiltered(categoryFiltered[0]);
-            setProviders(categoryFiltered[0]);
+            //  check local storage data
+            const localData = JSON.parse(localStorage.getItem('categoryListStorage'));
+            if (localData !== undefined && localData !== null) {
+                const categoryFiltered = localData.filter(category => category.id === +categoryId);
+                setCategoryFiltered(categoryFiltered[0]);
+                setProviders(categoryFiltered[0]);
+            } else {
+                history.push('/');
+            }
         } catch (error) {
             console.error(error);
             setError(error);
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [error, loading]);
 
     if (loading) return "Loading...";
     if (error) return <Message variant="danger">{error}</Message>
@@ -41,7 +48,7 @@ function ProviderScreen({match, history}) {
             </Link>
             <div>
                 <Row>
-                    {providers.providers.map((provider) => (
+                    { providers && providers.providers.map((provider) => (
                         <Col key={provider.id} sm={12} md={6} lg={4} xl={3}>
                             <Provider categoryId={categoryId} provider={provider}/>
                         </Col>

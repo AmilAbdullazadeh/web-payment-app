@@ -4,7 +4,7 @@ import HomeScreen from "./screens/HomeScreen";
 import ProviderScreen from "./screens/ProviderScreen";
 import FormScreen from "./screens/FormScreen";
 
-import {CategoryListContext} from "./contexts/CategoryListContext";
+// import {CategoryListContext} from "./contexts/CategoryListContext";
 
 function App() {
     return (

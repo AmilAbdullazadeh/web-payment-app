@@ -9,6 +9,7 @@ function FormScreen({match, history}) {
     const categoryId = match.params.categoryId;
     const providerId = match.params.providerId;
 
+    const [keyData, setKeyData] = useState();
     const [field, setField] = useState();
     const [providers, setProviders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -40,19 +41,19 @@ function FormScreen({match, history}) {
     useEffect(() => {
         try {
             //  check local storage data
-            const localData = JSON.parse(localStorage.getItem('receiptStorage'));
-
+            const localData = JSON.parse(localStorage.getItem('categoryListStorage'));
             if (localData !== undefined && localData !== null) {
-                setIsSubmit(true);
-                setShowReceipt(true);
-                setDataReceipt(localData);
+                const categoryFiltered = localData.filter(category => category.id === +categoryId);
+                setProviders(categoryFiltered[0].providers);
+                const providerFiltered = providers.filter(provider => provider.id === +providerId);
+                setField(providerFiltered[0]);
+
+                // setIsSubmit(true);
+                // setShowReceipt(true);
+                // setDataReceipt(localData);
+            } else {
+                history.push('/');
             }
-
-            const categoryFiltered = categoryList.filter(category => category.id === categoryId);
-            const providerFiltered = providers.filter(provider => provider.id === providerId);
-
-            setProviders(categoryFiltered[0].providers);
-            setField(providerFiltered[0]);
         } catch (error) {
             console.error(error);
             setError(error);
@@ -63,7 +64,11 @@ function FormScreen({match, history}) {
 
     const fieldChanged = (key, value) => {
         setDatas(currentValues => {
-            currentValues[key] = value;
+            // currentValues[key] = value;
+            currentValues[key] = {
+                k: key,
+                v: value
+            }
             return currentValues;
         });
 
@@ -76,7 +81,7 @@ function FormScreen({match, history}) {
         //         return currentValues;
         //     });
         // }
-
+        //
         // console.info('keyData', keyData);
     }
 
@@ -91,7 +96,7 @@ function FormScreen({match, history}) {
 
             const data = [
                 {
-                    providerId: providerId,
+                    providerId: +providerId,
                     fields: datas,
                     amount: {
                         value: value,
@@ -106,47 +111,64 @@ function FormScreen({match, history}) {
                 }
             ]
 
-            setDataRequest(data);
+            // // for generate id
+            // const generateRandomString = (length = 10) => Math.random().toString(20).substr(2, length)
+            // let randomId = generateRandomString(200);
+            //
+            // // yyyy-MM-ddTHH:mm:ss
+            // let date_ob = new Date();
+            // // adjust 0 before single digit date
+            // let date = ("0" + date_ob.getDate()).slice(-2);
+            // // current month
+            // let month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+            // // current year
+            // let year = date_ob.getFullYear();
+            // // current hours
+            // let hours = date_ob.getHours();
+            // // current minutes
+            // let minutes = date_ob.getMinutes();
+            // // current seconds
+            // let seconds = date_ob.getSeconds();
+            //
+            // const dateNow = `${year}-${month}-${date}T${hours}:${minutes}:${seconds}`;
+            //
+            // const receipt = {
+            //     id: randomId,
+            //     date: dateNow,
+            //     details: datas,
+            //     amount: {
+            //         value: value,
+            //         currency: currency
+            //     }
+            // }
 
-            // for generate id
-            const generateRandomString = (length = 10) => Math.random().toString(20).substr(2, length)
-            let randomId = generateRandomString(200);
+            const requestOptions = {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            };
 
-            // yyyy-MM-ddTHH:mm:ss
-            let date_ob = new Date();
-            // adjust 0 before single digit date
-            let date = ("0" + date_ob.getDate()).slice(-2);
-            // current month
-            let month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
-            // current year
-            let year = date_ob.getFullYear();
-            // current hours
-            let hours = date_ob.getHours();
-            // current minutes
-            let minutes = date_ob.getMinutes();
-            // current seconds
-            let seconds = date_ob.getSeconds();
+            console.log('requestOptions', requestOptions);
 
-            const dateNow = `${year}-${month}-${date}T${hours}:${minutes}:${seconds}`;
+            fetch("http://localhost:8080/payments/new", requestOptions)
+                .then((response) => response.json())
+                .then((data) => {
 
-            const receipt = {
-                id: randomId,
-                date: dateNow,
-                details: datas,
-                amount: {
-                    value: value,
-                    currency: currency
-                }
-            }
+                    console.log('res data', data);
+                    setDataReceipt(data);
 
-            setDataReceipt(receipt);
+                    // local storage
+                    localStorage.setItem('receiptStorage', JSON.stringify(data));
 
-            // local storage
-            localStorage.setItem('receiptStorage', JSON.stringify(receipt));
+                    // eslint-disable-next-line no-unused-expressions
+                    dataReceipt !== undefined && dataRequest !== undefined ? setShowReceipt(true) : setShowReceipt(false);
 
-            // eslint-disable-next-line no-unused-expressions
-            dataReceipt !== undefined && dataRequest !== undefined ? setShowReceipt(true) : setShowReceipt(false);
-
+                })
+                .catch((error) => {
+                    console.error(error);
+                    setError(error)
+                })
+                .finally(() => setLoading(false))
         }
         setValidated(true);
     };
@@ -196,10 +218,10 @@ function FormScreen({match, history}) {
                                                                         {
                                                                             f.options.map((option) => (
                                                                                 <option
-                                                                                    key={option.id}
-                                                                                    value={option.v}
+                                                                                    key={option.key}
+                                                                                    value={option.value}
                                                                                 >
-                                                                                    {option.v}
+                                                                                    {option.value}
                                                                                 </option>
                                                                             ))
                                                                         }
@@ -209,9 +231,9 @@ function FormScreen({match, history}) {
                                                                     <Form.Control
                                                                         required
                                                                         name={f.id}
-                                                                        type={f.type === 1 ? 'text' : (f.type === 2 && f.id !== 'phone_number') || (f.type === 3 && f.id !== 'phone_number') ? 'number' : f.type === 5 ? 'date' : 'text'}
+                                                                        type={f.type === 1 ? 'text' : (f.type === 2 && f.id !== 'number') || (f.type === 3 && f.id !== 'number') ? 'number' : f.type === 5 ? 'date' : 'text'}
                                                                         placeholder={f.label}
-                                                                        maxLength={f.id === 'phone_number' ? 7 : 55}
+                                                                        maxLength={f.id === 'number' ? 7 : 55}
                                                                         onChange={(e) => fieldChanged(f.id, e.target.value)}
                                                                     />
                                                                 )
