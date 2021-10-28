@@ -19,9 +19,9 @@ function Receipt({dataReceipt}) {
                         <Card.Title as="div">
                             <span className="text-success">Transaction details: </span>
                             {
-                                Object.entries(dataReceipt.details).map(([key, value]) => (
+                                dataReceipt.details.map((detail) => (
                                     <>
-                                        <strong>{key}: {value},</strong> <br/>
+                                        <strong>{detail.key}: {detail.value}</strong> <br/>
                                     </>
                                 ))
                             }

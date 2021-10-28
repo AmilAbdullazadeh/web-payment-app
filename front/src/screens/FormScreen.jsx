@@ -41,16 +41,18 @@ function FormScreen({match, history}) {
     useEffect(() => {
         try {
             //  check local storage data
+            const localReceiptData = JSON.parse(localStorage.getItem('receiptStorage'));
             const localData = JSON.parse(localStorage.getItem('categoryListStorage'));
-            if (localData !== undefined && localData !== null) {
+
+            if (localReceiptData !== undefined && localReceiptData !== null) {
+                setIsSubmit(true);
+                setShowReceipt(true);
+                setDataReceipt(localReceiptData);
+            } else if (localData !== undefined && localData !== null) {
                 const categoryFiltered = localData.filter(category => category.id === +categoryId);
                 setProviders(categoryFiltered[0].providers);
                 const providerFiltered = providers.filter(provider => provider.id === +providerId);
                 setField(providerFiltered[0]);
-
-                // setIsSubmit(true);
-                // setShowReceipt(true);
-                // setDataReceipt(localData);
             } else {
                 history.push('/');
             }
@@ -64,25 +66,12 @@ function FormScreen({match, history}) {
 
     const fieldChanged = (key, value) => {
         setDatas(currentValues => {
-            // currentValues[key] = value;
             currentValues[key] = {
-                k: key,
-                v: value
+                key: key,
+                value: value
             }
             return currentValues;
         });
-
-        // for (const [key, value] of Object.entries(datas)) {
-        //     setKeyData(currentValues => {
-        //         currentValues = {
-        //             k: currentValues[key],
-        //             v: value
-        //         }
-        //         return currentValues;
-        //     });
-        // }
-        //
-        // console.info('keyData', keyData);
     }
 
     const handleSubmit = (event) => {
@@ -94,10 +83,10 @@ function FormScreen({match, history}) {
         } else {
             event.preventDefault();
 
-            const data = [
+            const data =
                 {
                     providerId: +providerId,
-                    fields: datas,
+                    fields: Object.values(datas),
                     amount: {
                         value: value,
                         currency: currency
@@ -109,38 +98,6 @@ function FormScreen({match, history}) {
                         cvv: cvv
                     }
                 }
-            ]
-
-            // // for generate id
-            // const generateRandomString = (length = 10) => Math.random().toString(20).substr(2, length)
-            // let randomId = generateRandomString(200);
-            //
-            // // yyyy-MM-ddTHH:mm:ss
-            // let date_ob = new Date();
-            // // adjust 0 before single digit date
-            // let date = ("0" + date_ob.getDate()).slice(-2);
-            // // current month
-            // let month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
-            // // current year
-            // let year = date_ob.getFullYear();
-            // // current hours
-            // let hours = date_ob.getHours();
-            // // current minutes
-            // let minutes = date_ob.getMinutes();
-            // // current seconds
-            // let seconds = date_ob.getSeconds();
-            //
-            // const dateNow = `${year}-${month}-${date}T${hours}:${minutes}:${seconds}`;
-            //
-            // const receipt = {
-            //     id: randomId,
-            //     date: dateNow,
-            //     details: datas,
-            //     amount: {
-            //         value: value,
-            //         currency: currency
-            //     }
-            // }
 
             const requestOptions = {
                 method: 'POST',
@@ -148,21 +105,15 @@ function FormScreen({match, history}) {
                 body: JSON.stringify(data)
             };
 
-            console.log('requestOptions', requestOptions);
-
             fetch("http://localhost:8080/payments/new", requestOptions)
                 .then((response) => response.json())
-                .then((data) => {
-
-                    console.log('res data', data);
-                    setDataReceipt(data);
-
+                .then((res) => {
+                    console.log('data res', res)
+                    setDataReceipt(res.data);
                     // local storage
-                    localStorage.setItem('receiptStorage', JSON.stringify(data));
-
+                    localStorage.setItem('receiptStorage', JSON.stringify(res.data));
                     // eslint-disable-next-line no-unused-expressions
-                    dataReceipt !== undefined && dataRequest !== undefined ? setShowReceipt(true) : setShowReceipt(false);
-
+                    dataReceipt !== undefined ? setShowReceipt(true) : setShowReceipt(false);
                 })
                 .catch((error) => {
                     console.error(error);
@@ -174,9 +125,9 @@ function FormScreen({match, history}) {
     };
 
     const handleBack = () => {
-        const localeData = JSON.parse(localStorage.getItem('receiptStorage'));
+        const localData = JSON.parse(localStorage.getItem('receiptStorage'));
 
-        if (localeData !== undefined || true) {
+        if (localData !== undefined || true) {
             localStorage.removeItem('receiptStorage');
             setIsSubmit(false);
             setShowReceipt(false);
